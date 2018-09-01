@@ -1,5 +1,6 @@
 const _ = require('underscore');
 const nlp = require('compromise');
+const rareEnoughWord = require('../utils/rare-enough-word.js');
 
 /**
 * Black out a random word in a sentence. 
@@ -17,8 +18,15 @@ module.exports = async (sentence = "") => {
   sentenceTerms = _.filter(sentenceTerms, (term) => {
     return term.normal !== "";
   });
-    
-  let blackedOutIndex = getRandomInt(0, sentenceTerms.length - 1); 
+  
+  let blackedOutIndex = undefined;
+  for(i=0;i<3;i++) {
+    blackedOutIndex = getRandomInt(0, sentenceTerms.length - 1);
+    if(rareEnoughWord(sentenceTerms[blackedOutIndex])) {
+      i = 3;
+    }
+  }
+
   _.each(sentenceTerms, (term, index)=> {   
     if(index < blackedOutIndex) {
       sentenceDict.before += term.text;
